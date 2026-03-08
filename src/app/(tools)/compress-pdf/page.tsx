@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { Dropzone } from "@/components/tools/dropzone";
 import { QualitySelector } from "@/components/tools/quality-selector";
 import {
@@ -15,7 +15,7 @@ import { PageReorderPanel } from "@/components/tools/page-reorder-panel";
 import { COMPRESSION_PRESETS, formatBytes } from "@/lib/constants";
 import { TargetSizeSelector } from "@/components/tools/target-size-selector";
 import { FileItem, CompressionPreset } from "@/types";
-import { FileDown, Lock, RotateCcw, Loader2 } from "lucide-react";
+import { FileDown, Lock, RotateCcw, Loader2, Plus } from "lucide-react";
 import { FileReorderList } from "@/components/tools/file-reorder-list";
 import { trackJob } from "@/lib/track-job";
 import { toast } from "sonner";
@@ -70,11 +70,12 @@ export default function CompressPDFPage() {
     });
   }, []);
 
+  const filesSnapshotRef = useRef<{ files: FileItem[]; thumbs: PageThumbnail[] } | null>(null);
+
   const removeFile = useCallback((index: number) => {
-    setFiles((prev) => {
-      const next = prev.filter((_, i) => i !== index);
-      return next;
-    });
+    // Save snapshot for undo
+    filesSnapshotRef.current = { files: [...files], thumbs: [...pageThumbnails] };
+    setFiles((prev) => prev.filter((_, i) => i !== index));
     // Remove thumbnails for this file and reindex
     setPageThumbnails((prev) => {
       const filtered = prev.filter((p) => p.fileIndex !== index);
@@ -83,6 +84,14 @@ export default function CompressPDFPage() {
         fileIndex: p.fileIndex > index ? p.fileIndex - 1 : p.fileIndex,
       }));
     });
+  }, [files, pageThumbnails]);
+
+  const restoreFile = useCallback((index: number) => {
+    if (filesSnapshotRef.current) {
+      setFiles(filesSnapshotRef.current.files);
+      setPageThumbnails(filesSnapshotRef.current.thumbs);
+      filesSnapshotRef.current = null;
+    }
   }, []);
 
   const compressAll = useCallback(async () => {
@@ -319,6 +328,7 @@ export default function CompressPDFPage() {
               files={files.map((f) => ({ name: f.name, size: f.originalSize }))}
               onReorder={reorderFile}
               onRemove={removeFile}
+              onRestore={restoreFile}
               title="Files to compress"
               disabled={isCompressing}
             />
@@ -363,7 +373,7 @@ export default function CompressPDFPage() {
             />
           )}
 
-          <div className="flex gap-3">
+          <div className="flex gap-3 flex-wrap">
             {!allDone && !isCompressing && (
               <Button onClick={compressAll} size="lg" className="flex-1">
                 Compress {files.length} file{files.length !== 1 ? "s" : ""}
@@ -375,10 +385,33 @@ export default function CompressPDFPage() {
                 Compressing...
               </Button>
             )}
+            {!allDone && !isCompressing && (
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={() => document.getElementById("add-more-pdf")?.click()}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Files
+              </Button>
+            )}
             <Button variant="outline" size="lg" onClick={reset}>
               <RotateCcw className="h-4 w-4 mr-2" />
               Start Over
             </Button>
+            <input
+              id="add-more-pdf"
+              type="file"
+              className="hidden"
+              accept="application/pdf"
+              multiple
+              onChange={(e) => {
+                if (e.target.files) {
+                  handleFiles(Array.from(e.target.files));
+                  e.target.value = "";
+                }
+              }}
+            />
           </div>
         </div>
       )}

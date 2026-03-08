@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { FileCard } from "@/components/tools/dropzone";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -11,12 +11,15 @@ import {
   ArrowDownUp,
   ListOrdered,
   X,
+  Undo2,
 } from "lucide-react";
+import { toast } from "sonner";
 
 interface FileReorderListProps {
   files: { name: string; size: number }[];
   onReorder: (from: number, to: number) => void;
   onRemove: (index: number) => void;
+  onRestore?: (index: number) => void;
   title?: string;
   disabled?: boolean;
 }
@@ -25,12 +28,30 @@ export function FileReorderList({
   files,
   onReorder,
   onRemove,
+  onRestore,
   title = "Files",
   disabled = false,
 }: FileReorderListProps) {
   const [reorderEnabled, setReorderEnabled] = useState(false);
   const [dragIdx, setDragIdx] = useState<number | null>(null);
   const [dragOverIdx, setDragOverIdx] = useState<number | null>(null);
+
+  const handleRemove = useCallback(
+    (index: number) => {
+      const fileName = files[index]?.name || "File";
+      onRemove(index);
+      toast(`"${fileName}" removed`, {
+        action: onRestore
+          ? {
+              label: "Undo",
+              onClick: () => onRestore(index),
+            }
+          : undefined,
+        duration: 5000,
+      });
+    },
+    [files, onRemove, onRestore]
+  );
 
   const handleDragStart = useCallback(
     (index: number) => {
@@ -140,7 +161,7 @@ export function FileReorderList({
               <FileCard
                 name={file.name}
                 size={file.size}
-                onRemove={() => onRemove(index)}
+                onRemove={() => handleRemove(index)}
               />
             </div>
             {reorderEnabled && files.length > 1 && (

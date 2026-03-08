@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { Dropzone } from "@/components/tools/dropzone";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -15,6 +15,7 @@ import {
   RotateCcw,
   Loader2,
   Download,
+  Plus,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -47,7 +48,11 @@ export default function MergePDFPage() {
     setLoadingPages(false);
   }, [files.length]);
 
+  const filesSnapshotRef = useRef<{ files: File[]; thumbs: PageThumbnail[] } | null>(null);
+
   const removeFile = useCallback((index: number) => {
+    // Save snapshot for undo
+    filesSnapshotRef.current = { files: [...files], thumbs: [...pageThumbnails] };
     setFiles((prev) => prev.filter((_, i) => i !== index));
     setMergedBlob(null);
     // Remove thumbnails for this file and reindex
@@ -58,6 +63,15 @@ export default function MergePDFPage() {
         fileIndex: p.fileIndex > index ? p.fileIndex - 1 : p.fileIndex,
       }));
     });
+  }, [files, pageThumbnails]);
+
+  const restoreFile = useCallback(() => {
+    if (filesSnapshotRef.current) {
+      setFiles(filesSnapshotRef.current.files);
+      setPageThumbnails(filesSnapshotRef.current.thumbs);
+      setMergedBlob(null);
+      filesSnapshotRef.current = null;
+    }
   }, []);
 
   const moveFile = useCallback((from: number, to: number) => {
@@ -162,6 +176,7 @@ export default function MergePDFPage() {
             files={files.map((f) => ({ name: f.name, size: f.size }))}
             onReorder={moveFile}
             onRemove={removeFile}
+            onRestore={restoreFile}
             title="Files to merge"
             disabled={isMerging}
           />
@@ -200,7 +215,7 @@ export default function MergePDFPage() {
             </div>
           )}
 
-          <div className="flex gap-3">
+          <div className="flex gap-3 flex-wrap">
             {!mergedBlob && (
               <Button
                 onClick={merge}
@@ -218,10 +233,33 @@ export default function MergePDFPage() {
                 )}
               </Button>
             )}
+            {!mergedBlob && !isMerging && (
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={() => document.getElementById("add-more-merge")?.click()}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Files
+              </Button>
+            )}
             <Button variant="outline" size="lg" onClick={reset}>
               <RotateCcw className="h-4 w-4 mr-2" />
               Start Over
             </Button>
+            <input
+              id="add-more-merge"
+              type="file"
+              className="hidden"
+              accept="application/pdf"
+              multiple
+              onChange={(e) => {
+                if (e.target.files) {
+                  handleFiles(Array.from(e.target.files));
+                  e.target.value = "";
+                }
+              }}
+            />
           </div>
         </div>
       )}

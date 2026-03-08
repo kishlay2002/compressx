@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
@@ -11,9 +11,9 @@ import {
   ListOrdered,
   X,
   Loader2,
-  FileText,
   Layers,
 } from "lucide-react";
+import { toast } from "sonner";
 import type { PageThumbnail } from "@/lib/compression/pdf-client";
 
 interface PageReorderPanelProps {
@@ -46,12 +46,29 @@ export function PageReorderPanel({
     [pages, onPagesChange, disabled]
   );
 
+  const snapshotRef = useRef<PageThumbnail[] | null>(null);
+
   const removePage = useCallback(
     (index: number) => {
       if (disabled) return;
       if (pages.length <= 1) return;
+      const removed = pages[index];
+      const snapshot = [...pages];
+      snapshotRef.current = snapshot;
       const next = pages.filter((_, i) => i !== index);
       onPagesChange(next);
+      toast(`"${removed.pageLabel}" from ${removed.fileName} removed`, {
+        action: {
+          label: "Undo",
+          onClick: () => {
+            if (snapshotRef.current) {
+              onPagesChange(snapshotRef.current);
+              snapshotRef.current = null;
+            }
+          },
+        },
+        duration: 5000,
+      });
     },
     [pages, onPagesChange, disabled]
   );
@@ -151,13 +168,12 @@ export function PageReorderPanel({
       </div>
 
       {reorderEnabled && pages.length > 1 && (
-        <p className="text-xs text-muted-foreground">
-          Drag pages to reorder or use arrows. Click × to remove a page.
-        </p>
-      )}
-
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-        {pages.map((page, index) => (
+        <>
+          <p className="text-xs text-muted-foreground">
+            Drag pages to reorder or use arrows. Click × to remove a page.
+          </p>
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
+            {pages.map((page, index) => (
           <div
             key={`${page.fileIndex}-${page.pageIndex}-${index}`}
             draggable={reorderEnabled && !disabled}
@@ -244,7 +260,9 @@ export function PageReorderPanel({
             )}
           </div>
         ))}
-      </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

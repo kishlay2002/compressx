@@ -13,7 +13,7 @@ import { compressImageClient, compressImageToTargetSize } from "@/lib/compressio
 import { COMPRESSION_PRESETS, ACCEPTED_IMAGE_TYPES } from "@/lib/constants";
 import { TargetSizeSelector } from "@/components/tools/target-size-selector";
 import { FileItem, CompressionPreset } from "@/types";
-import { ImageDown, Lock, RotateCcw, Loader2, Download, Eye } from "lucide-react";
+import { ImageDown, Lock, RotateCcw, Loader2, Download, Eye, Plus } from "lucide-react";
 import { ImageComparison } from "@/components/tools/image-comparison";
 import { trackJob } from "@/lib/track-job";
 import { toast } from "sonner";
@@ -268,7 +268,7 @@ export default function CompressImagePage() {
             />
           )}
 
-          <div className="flex gap-3">
+          <div className="flex gap-3 flex-wrap">
             {!allDone && !isCompressing && (
               <Button onClick={compressAll} size="lg" className="flex-1">
                 Compress {files.length} file{files.length !== 1 ? "s" : ""}
@@ -280,10 +280,33 @@ export default function CompressImagePage() {
                 Compressing...
               </Button>
             )}
+            {!allDone && !isCompressing && (
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={() => document.getElementById("add-more-img")?.click()}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Files
+              </Button>
+            )}
             <Button variant="outline" size="lg" onClick={reset}>
               <RotateCcw className="h-4 w-4 mr-2" />
               Start Over
             </Button>
+            <input
+              id="add-more-img"
+              type="file"
+              className="hidden"
+              accept="image/*"
+              multiple
+              onChange={(e) => {
+                if (e.target.files) {
+                  handleFiles(Array.from(e.target.files));
+                  e.target.value = "";
+                }
+              }}
+            />
           </div>
         </div>
       )}

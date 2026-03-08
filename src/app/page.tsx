@@ -135,9 +135,10 @@ const pricingPlans = [
       "Format conversion",
       "Priority support",
     ],
-    cta: "Start Free Trial",
-    href: "/register",
+    cta: "Coming Soon",
+    href: "#",
     popular: true,
+    disabled: true,
   },
   {
     name: "Business",
@@ -152,17 +153,18 @@ const pricingPlans = [
       "White-label option",
       "Dedicated support",
     ],
-    cta: "Contact Sales",
-    href: "/register",
+    cta: "Coming Soon",
+    href: "#",
     popular: false,
+    disabled: true,
   },
 ];
 
 const stats = [
-  { value: "10M+", label: "Files compressed" },
-  { value: "80%", label: "Avg. reduction" },
-  { value: "100%", label: "Private & secure" },
-  { value: "0", label: "Files uploaded to servers" },
+  { value: "100%", label: "Client-side processing" },
+  { value: "~70%", label: "Avg. size reduction" },
+  { value: "Zero", label: "Files uploaded to servers" },
+  { value: "Free", label: "No sign-up required" },
 ];
 
 export default function Home() {
@@ -319,16 +321,27 @@ export default function Home() {
                     <span className="text-5xl font-bold">{plan.price}</span>
                     <span className="text-muted-foreground ml-1">{plan.period}</span>
                   </div>
-                  <Link
-                    href={plan.href}
-                    className={cn(
-                      buttonVariants({ variant: plan.popular ? "default" : "outline" }),
-                      "w-full h-11 text-base",
-                      plan.popular && "shadow-lg shadow-primary/25"
-                    )}
-                  >
-                    {plan.cta}
-                  </Link>
+                  {plan.disabled ? (
+                    <div
+                      className={cn(
+                        buttonVariants({ variant: "outline" }),
+                        "w-full h-11 text-base opacity-60 cursor-not-allowed pointer-events-none"
+                      )}
+                    >
+                      {plan.cta}
+                    </div>
+                  ) : (
+                    <Link
+                      href={plan.href}
+                      className={cn(
+                        buttonVariants({ variant: plan.popular ? "default" : "outline" }),
+                        "w-full h-11 text-base",
+                        plan.popular && "shadow-lg shadow-primary/25"
+                      )}
+                    >
+                      {plan.cta}
+                    </Link>
+                  )}
                   <ul className="mt-8 space-y-3.5">
                     {plan.features.map((feature) => (
                       <li
