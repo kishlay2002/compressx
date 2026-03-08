@@ -7,7 +7,7 @@ export const COMPRESSION_PRESETS: CompressionPreset[] = [
     value: "light",
     jpegQuality: 85,
     pngQuality: 90,
-    pdfImageQuality: 85,
+    pdfImageQuality: 90,
     stripMetadata: false,
   },
   {
@@ -16,7 +16,7 @@ export const COMPRESSION_PRESETS: CompressionPreset[] = [
     value: "balanced",
     jpegQuality: 72,
     pngQuality: 75,
-    pdfImageQuality: 72,
+    pdfImageQuality: 78,
     stripMetadata: true,
   },
   {
@@ -25,7 +25,7 @@ export const COMPRESSION_PRESETS: CompressionPreset[] = [
     value: "maximum",
     jpegQuality: 55,
     pngQuality: 55,
-    pdfImageQuality: 50,
+    pdfImageQuality: 60,
     stripMetadata: true,
   },
 ];
