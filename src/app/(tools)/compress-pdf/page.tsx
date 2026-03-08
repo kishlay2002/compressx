@@ -9,14 +9,19 @@ import {
 } from "@/components/tools/compression-result";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { compressPDFClient, compressPDFToTargetSize } from "@/lib/compression/pdf-client";
-import { COMPRESSION_PRESETS } from "@/lib/constants";
+import { compressPDFClient, compressPDFToTargetSize, extractPageThumbnails, reorderPDFPages, getPDFInfo } from "@/lib/compression/pdf-client";
+import type { PageThumbnail } from "@/lib/compression/pdf-client";
+import { PageReorderPanel } from "@/components/tools/page-reorder-panel";
+import { COMPRESSION_PRESETS, formatBytes } from "@/lib/constants";
 import { TargetSizeSelector } from "@/components/tools/target-size-selector";
 import { FileItem, CompressionPreset } from "@/types";
 import { FileDown, Lock, RotateCcw, Loader2 } from "lucide-react";
+import { FileReorderList } from "@/components/tools/file-reorder-list";
 import { trackJob } from "@/lib/track-job";
 import { toast } from "sonner";
 import JSZip from "jszip";
+import { AIEnhanceToggle } from "@/components/tools/ai-enhance-toggle";
+import type { AIEnhanceConfig } from "@/lib/compression/ai-enhance";
 
 export default function CompressPDFPage() {
   const [files, setFiles] = useState<FileItem[]>([]);
@@ -24,8 +29,12 @@ export default function CompressPDFPage() {
   const [isCompressing, setIsCompressing] = useState(false);
   const [targetEnabled, setTargetEnabled] = useState(false);
   const [targetSizeKB, setTargetSizeKB] = useState(500);
+  const [aiEnabled, setAiEnabled] = useState(false);
+  const [aiConfig, setAiConfig] = useState<AIEnhanceConfig | null>(null);
+  const [pageThumbnails, setPageThumbnails] = useState<PageThumbnail[]>([]);
+  const [loadingPages, setLoadingPages] = useState(false);
 
-  const handleFiles = useCallback((newFiles: File[]) => {
+  const handleFiles = useCallback(async (newFiles: File[]) => {
     const items: FileItem[] = newFiles.map((file) => ({
       id: crypto.randomUUID(),
       file,
@@ -35,14 +44,82 @@ export default function CompressPDFPage() {
       progress: 0,
     }));
     setFiles((prev) => [...prev, ...items]);
+
+    // Extract page thumbnails for page-level reorder
+    setLoadingPages(true);
+    try {
+      const existingCount = files.length;
+      const allThumbs: PageThumbnail[] = [];
+      for (let i = 0; i < newFiles.length; i++) {
+        const thumbs = await extractPageThumbnails(newFiles[i], existingCount + i);
+        allThumbs.push(...thumbs);
+      }
+      setPageThumbnails((prev) => [...prev, ...allThumbs]);
+    } catch {
+      // Thumbnail extraction failed — page reorder won't be available
+    }
+    setLoadingPages(false);
+  }, [files.length]);
+
+  const reorderFile = useCallback((from: number, to: number) => {
+    setFiles((prev) => {
+      const next = [...prev];
+      const [moved] = next.splice(from, 1);
+      next.splice(to, 0, moved);
+      return next;
+    });
+  }, []);
+
+  const removeFile = useCallback((index: number) => {
+    setFiles((prev) => {
+      const next = prev.filter((_, i) => i !== index);
+      return next;
+    });
+    // Remove thumbnails for this file and reindex
+    setPageThumbnails((prev) => {
+      const filtered = prev.filter((p) => p.fileIndex !== index);
+      return filtered.map((p) => ({
+        ...p,
+        fileIndex: p.fileIndex > index ? p.fileIndex - 1 : p.fileIndex,
+      }));
+    });
   }, []);
 
   const compressAll = useCallback(async () => {
     setIsCompressing(true);
     const settings = COMPRESSION_PRESETS.find((p) => p.value === preset)!;
 
-    for (let i = 0; i < files.length; i++) {
-      if (files[i].status === "done") continue;
+    // Apply page reorder if pages were rearranged or removed
+    const currentFiles = [...files];
+    if (pageThumbnails.length > 0) {
+      for (let fi = 0; fi < currentFiles.length; fi++) {
+        const filePages = pageThumbnails
+          .filter((p) => p.fileIndex === fi)
+          .map((p) => p.pageIndex);
+        if (filePages.length > 0) {
+          const info = await getPDFInfo(currentFiles[fi].file);
+          const isDefault =
+            filePages.length === info.pageCount &&
+            filePages.every((p, idx) => p === idx);
+          if (!isDefault) {
+            try {
+              const reordered = await reorderPDFPages(currentFiles[fi].file, filePages);
+              currentFiles[fi] = {
+                ...currentFiles[fi],
+                file: reordered,
+                originalSize: reordered.size,
+              };
+            } catch {
+              // If reorder fails, use original file
+            }
+          }
+        }
+      }
+      setFiles([...currentFiles]);
+    }
+
+    for (let i = 0; i < currentFiles.length; i++) {
+      if (currentFiles[i].status === "done") continue;
 
       setFiles((prev) =>
         prev.map((f, idx) =>
@@ -51,15 +128,18 @@ export default function CompressPDFPage() {
       );
 
       try {
+        const activeAi = aiEnabled && aiConfig?.apiKey ? aiConfig : undefined;
         const result = targetEnabled
           ? await compressPDFToTargetSize(
               files[i].file,
-              targetSizeKB * 1024
+              targetSizeKB * 1024,
+              activeAi
             )
           : await compressPDFClient(
               files[i].file,
               settings.pdfImageQuality / 100,
-              settings.stripMetadata
+              settings.stripMetadata,
+              activeAi
             );
 
         setFiles((prev) =>
@@ -102,15 +182,26 @@ export default function CompressPDFPage() {
 
     setIsCompressing(false);
 
-    const doneCount = files.filter((f) => f.status !== "error").length;
-    const errorCount = files.filter((f) => f.status === "error").length;
-    if (doneCount > 0) {
-      toast.success(`${doneCount} PDF${doneCount > 1 ? "s" : ""} compressed successfully`);
+    const updatedFiles = files;
+    const doneFiles = updatedFiles.filter((f) => f.status !== "error");
+    const errorCount = updatedFiles.filter((f) => f.status === "error").length;
+    if (doneFiles.length > 0) {
+      if (targetEnabled && doneFiles.length === 1 && doneFiles[0].compressedSize) {
+        const achieved = doneFiles[0].compressedSize;
+        const targetBytes = targetSizeKB * 1024;
+        if (achieved <= targetBytes) {
+          toast.success(`Compressed to ${formatBytes(achieved)} (target: ${formatBytes(targetBytes)})`);
+        } else {
+          toast.info(`Best achievable: ${formatBytes(achieved)} (target was ${formatBytes(targetBytes)}). Lower targets require more quality trade-off.`);
+        }
+      } else {
+        toast.success(`${doneFiles.length} PDF${doneFiles.length > 1 ? "s" : ""} compressed successfully`);
+      }
     }
     if (errorCount > 0) {
       toast.error(`${errorCount} file${errorCount > 1 ? "s" : ""} failed to compress`);
     }
-  }, [files, preset, targetEnabled, targetSizeKB]);
+  }, [files, preset, targetEnabled, targetSizeKB, aiEnabled, aiConfig, pageThumbnails]);
 
   const downloadFile = useCallback((item: FileItem) => {
     if (!item.compressedBlob) return;
@@ -144,6 +235,7 @@ export default function CompressPDFPage() {
 
   const reset = useCallback(() => {
     setFiles([]);
+    setPageThumbnails([]);
   }, []);
 
   const allDone = files.length > 0 && files.every((f) => f.status === "done");
@@ -161,7 +253,7 @@ export default function CompressPDFPage() {
         </p>
         <Badge variant="secondary" className="mt-4 px-4 py-1.5 border border-green-500/20 bg-green-500/5 text-green-700 dark:text-green-400">
           <Lock className="h-3 w-3 mr-1.5" />
-          Processed locally — files never leave your device
+          Processed locally — files never leave your device{aiEnabled ? " (AI pages sent to API)" : ""}
         </Badge>
       </div>
 
@@ -188,6 +280,12 @@ export default function CompressPDFPage() {
                 <QualitySelector value={preset} onChange={setPreset} />
               </div>
             )}
+            <AIEnhanceToggle
+              enabled={aiEnabled}
+              onEnabledChange={setAiEnabled}
+              config={aiConfig}
+              onConfigChange={setAiConfig}
+            />
           </div>
         </>
       ) : (
@@ -207,7 +305,33 @@ export default function CompressPDFPage() {
                   <QualitySelector value={preset} onChange={setPreset} />
                 </div>
               )}
+              <AIEnhanceToggle
+                enabled={aiEnabled}
+                onEnabledChange={setAiEnabled}
+                config={aiConfig}
+                onConfigChange={setAiConfig}
+              />
             </div>
+          )}
+
+          {files.some((f) => f.status === "pending") && files.length > 1 && (
+            <FileReorderList
+              files={files.map((f) => ({ name: f.name, size: f.originalSize }))}
+              onReorder={reorderFile}
+              onRemove={removeFile}
+              title="Files to compress"
+              disabled={isCompressing}
+            />
+          )}
+
+          {files.some((f) => f.status === "pending") && (pageThumbnails.length > 0 || loadingPages) && (
+            <PageReorderPanel
+              pages={pageThumbnails}
+              onPagesChange={setPageThumbnails}
+              loading={loadingPages}
+              disabled={isCompressing}
+              multiFile={files.length > 1}
+            />
           )}
 
           <div className="space-y-3">

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { formatBytes } from "@/lib/constants";
-import { Target, Info } from "lucide-react";
+import { Target, Info, ShieldCheck, AlertTriangle, ShieldAlert } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface TargetSizeSelectorProps {
@@ -139,18 +139,38 @@ export function TargetSizeSelector({
             ))}
           </div>
 
-          {originalSizeBytes && (
-            <div className="flex items-start gap-2.5 rounded-xl bg-gradient-to-r from-primary/5 to-violet-500/5 border border-primary/10 p-3.5 text-xs text-muted-foreground">
-              <Info className="h-3.5 w-3.5 mt-0.5 shrink-0 text-primary" />
-              <p>
-                Original size: <strong className="text-foreground">{formatBytes(originalSizeBytes)}</strong>
-                . Target: <strong className="text-primary">{formatBytes(targetSizeKB * 1024)}</strong>
-                {" "}({Math.round((1 - (targetSizeKB * 1024) / originalSizeBytes) * 100)}% reduction).
-                The compressor will iteratively adjust quality and resolution to
-                reach as close to the target as possible.
-              </p>
-            </div>
-          )}
+          {originalSizeBytes && (() => {
+            const ratio = (targetSizeKB * 1024) / originalSizeBytes;
+            const reductionPct = Math.round((1 - ratio) * 100);
+            const isGreen = ratio > 0.5;
+            const isYellow = ratio > 0.2 && ratio <= 0.5;
+            const isRed = ratio <= 0.2;
+
+            return (
+              <div className={cn(
+                "flex items-start gap-2.5 rounded-xl border p-3.5 text-xs",
+                isGreen && "bg-gradient-to-r from-green-500/5 to-emerald-500/5 border-green-500/20 text-green-800 dark:text-green-300",
+                isYellow && "bg-gradient-to-r from-amber-500/5 to-yellow-500/5 border-amber-500/20 text-amber-800 dark:text-amber-300",
+                isRed && "bg-gradient-to-r from-red-500/5 to-orange-500/5 border-red-500/20 text-red-800 dark:text-red-300"
+              )}>
+                {isGreen && <ShieldCheck className="h-4 w-4 mt-0.5 shrink-0 text-green-600" />}
+                {isYellow && <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0 text-amber-600" />}
+                {isRed && <ShieldAlert className="h-4 w-4 mt-0.5 shrink-0 text-red-600" />}
+                <div>
+                  <p>
+                    <strong className="text-foreground">{formatBytes(originalSizeBytes)}</strong>
+                    {" → "}<strong>{formatBytes(targetSizeKB * 1024)}</strong>
+                    {" "}({reductionPct}% reduction)
+                  </p>
+                  <p className="mt-1 opacity-80">
+                    {isGreen && "Excellent — text quality will be preserved with sharp rendering."}
+                    {isYellow && "Moderate — text will be readable but some detail may soften at high zoom."}
+                    {isRed && "Aggressive — text may lose sharpness. Consider a higher target for better readability."}
+                  </p>
+                </div>
+              </div>
+            );
+          })()}
         </div>
       )}
     </div>

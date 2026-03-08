@@ -1,21 +1,20 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
-import { Dropzone, FileCard } from "@/components/tools/dropzone";
+import { useState, useCallback } from "react";
+import { Dropzone } from "@/components/tools/dropzone";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { mergePDFs } from "@/lib/compression/pdf-client";
+import { mergePDFs, mergeWithPageOrder, extractPageThumbnails } from "@/lib/compression/pdf-client";
+import type { PageThumbnail } from "@/lib/compression/pdf-client";
 import { formatBytes } from "@/lib/constants";
-import { cn } from "@/lib/utils";
+import { FileReorderList } from "@/components/tools/file-reorder-list";
+import { PageReorderPanel } from "@/components/tools/page-reorder-panel";
 import {
   FilePlus2,
   Lock,
   RotateCcw,
   Loader2,
   Download,
-  GripVertical,
-  ArrowUp,
-  ArrowDown,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -24,18 +23,41 @@ export default function MergePDFPage() {
   const [mergedBlob, setMergedBlob] = useState<Blob | null>(null);
   const [isMerging, setIsMerging] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [dragIdx, setDragIdx] = useState<number | null>(null);
-  const [dragOverIdx, setDragOverIdx] = useState<number | null>(null);
+  const [pageThumbnails, setPageThumbnails] = useState<PageThumbnail[]>([]);
+  const [loadingPages, setLoadingPages] = useState(false);
 
-  const handleFiles = useCallback((newFiles: File[]) => {
+  const handleFiles = useCallback(async (newFiles: File[]) => {
     setFiles((prev) => [...prev, ...newFiles]);
     setMergedBlob(null);
     setError(null);
-  }, []);
+
+    // Extract page thumbnails for page-level reorder
+    setLoadingPages(true);
+    try {
+      const existingCount = files.length;
+      const allThumbs: PageThumbnail[] = [];
+      for (let i = 0; i < newFiles.length; i++) {
+        const thumbs = await extractPageThumbnails(newFiles[i], existingCount + i);
+        allThumbs.push(...thumbs);
+      }
+      setPageThumbnails((prev) => [...prev, ...allThumbs]);
+    } catch {
+      // Thumbnail extraction failed
+    }
+    setLoadingPages(false);
+  }, [files.length]);
 
   const removeFile = useCallback((index: number) => {
     setFiles((prev) => prev.filter((_, i) => i !== index));
     setMergedBlob(null);
+    // Remove thumbnails for this file and reindex
+    setPageThumbnails((prev) => {
+      const filtered = prev.filter((p) => p.fileIndex !== index);
+      return filtered.map((p) => ({
+        ...p,
+        fileIndex: p.fileIndex > index ? p.fileIndex - 1 : p.fileIndex,
+      }));
+    });
   }, []);
 
   const moveFile = useCallback((from: number, to: number) => {
@@ -46,31 +68,20 @@ export default function MergePDFPage() {
       return next;
     });
     setMergedBlob(null);
-  }, []);
-
-  const handleDragStart = useCallback((index: number) => {
-    setDragIdx(index);
-  }, []);
-
-  const handleDragOver = useCallback((e: React.DragEvent, index: number) => {
-    e.preventDefault();
-    setDragOverIdx(index);
-  }, []);
-
-  const handleDrop = useCallback(
-    (index: number) => {
-      if (dragIdx !== null && dragIdx !== index) {
-        moveFile(dragIdx, index);
-      }
-      setDragIdx(null);
-      setDragOverIdx(null);
-    },
-    [dragIdx, moveFile]
-  );
-
-  const handleDragEnd = useCallback(() => {
-    setDragIdx(null);
-    setDragOverIdx(null);
+    // Remap thumbnail fileIndex to match new file order
+    setPageThumbnails((prev) =>
+      prev.map((p) => {
+        let newIdx = p.fileIndex;
+        if (p.fileIndex === from) {
+          newIdx = to;
+        } else if (from < to && p.fileIndex > from && p.fileIndex <= to) {
+          newIdx = p.fileIndex - 1;
+        } else if (from > to && p.fileIndex >= to && p.fileIndex < from) {
+          newIdx = p.fileIndex + 1;
+        }
+        return { ...p, fileIndex: newIdx };
+      })
+    );
   }, []);
 
   const merge = useCallback(async () => {
@@ -79,9 +90,21 @@ export default function MergePDFPage() {
     setError(null);
 
     try {
-      const blob = await mergePDFs(files);
+      let blob: Blob;
+
+      // Check if pages were reordered/removed
+      if (pageThumbnails.length > 0) {
+        const pageOrder = pageThumbnails.map((p) => ({
+          fileIndex: p.fileIndex,
+          pageIndex: p.pageIndex,
+        }));
+        blob = await mergeWithPageOrder(files, pageOrder);
+      } else {
+        blob = await mergePDFs(files);
+      }
+
       setMergedBlob(blob);
-      toast.success(`${files.length} PDFs merged successfully`);
+      toast.success(`${files.length} PDFs merged successfully (${pageThumbnails.length} pages)`);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Merge failed";
       setError(msg);
@@ -89,7 +112,7 @@ export default function MergePDFPage() {
     }
 
     setIsMerging(false);
-  }, [files]);
+  }, [files, pageThumbnails]);
 
   const download = useCallback(() => {
     if (!mergedBlob) return;
@@ -105,6 +128,7 @@ export default function MergePDFPage() {
     setFiles([]);
     setMergedBlob(null);
     setError(null);
+    setPageThumbnails([]);
   }, []);
 
   return (
@@ -134,61 +158,23 @@ export default function MergePDFPage() {
 
       {files.length > 0 && (
         <div className="mt-6 space-y-6">
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-medium">
-                Files to merge ({files.length})
-              </h3>
-              <p className="text-xs text-muted-foreground">
-                Drag to reorder or use arrows
-              </p>
-            </div>
-            <div className="space-y-2">
-              {files.map((file, index) => (
-                <div
-                  key={`${file.name}-${index}`}
-                  draggable
-                  onDragStart={() => handleDragStart(index)}
-                  onDragOver={(e) => handleDragOver(e, index)}
-                  onDrop={() => handleDrop(index)}
-                  onDragEnd={handleDragEnd}
-                  className={cn(
-                    "flex items-center gap-2 rounded-xl p-1.5 transition-all",
-                    dragIdx === index && "opacity-50",
-                    dragOverIdx === index && dragIdx !== index && "ring-2 ring-primary/40 bg-primary/5"
-                  )}
-                >
-                  <GripVertical className="h-4 w-4 text-muted-foreground shrink-0 cursor-grab active:cursor-grabbing" />
-                  <span className="text-xs text-muted-foreground w-6 text-center font-medium">
-                    {index + 1}
-                  </span>
-                  <div className="flex-1">
-                    <FileCard
-                      name={file.name}
-                      size={file.size}
-                      onRemove={() => removeFile(index)}
-                    />
-                  </div>
-                  <div className="flex flex-col gap-0.5 shrink-0">
-                    <button
-                      onClick={() => index > 0 && moveFile(index, index - 1)}
-                      disabled={index === 0}
-                      className="p-1 rounded hover:bg-muted disabled:opacity-30 transition-colors"
-                    >
-                      <ArrowUp className="h-3 w-3" />
-                    </button>
-                    <button
-                      onClick={() => index < files.length - 1 && moveFile(index, index + 1)}
-                      disabled={index === files.length - 1}
-                      className="p-1 rounded hover:bg-muted disabled:opacity-30 transition-colors"
-                    >
-                      <ArrowDown className="h-3 w-3" />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <FileReorderList
+            files={files.map((f) => ({ name: f.name, size: f.size }))}
+            onReorder={moveFile}
+            onRemove={removeFile}
+            title="Files to merge"
+            disabled={isMerging}
+          />
+
+          {!mergedBlob && (pageThumbnails.length > 0 || loadingPages) && (
+            <PageReorderPanel
+              pages={pageThumbnails}
+              onPagesChange={setPageThumbnails}
+              loading={loadingPages}
+              disabled={isMerging}
+              multiFile={files.length > 1}
+            />
+          )}
 
           {mergedBlob && (
             <div className="rounded-2xl border-2 border-green-500/20 bg-gradient-to-br from-green-500/5 to-emerald-500/5 p-6">
