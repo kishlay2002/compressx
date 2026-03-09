@@ -29,9 +29,9 @@ const tools = [
     desc: "JPEG, PNG, WebP — up to 80% smaller",
     icon: ImageDown,
     href: "/compress-image",
-    accent: "from-orange-500 to-amber-400",
-    bg: "bg-orange-500/10",
-    text: "text-orange-600 dark:text-orange-400",
+    accent: "from-indigo-500 to-blue-400",
+    bg: "bg-indigo-500/10",
+    text: "text-indigo-600 dark:text-indigo-400",
   },
   {
     title: "Crush PDFs",
@@ -40,7 +40,7 @@ const tools = [
     href: "/compress-pdf",
     accent: "from-rose-500 to-pink-400",
     bg: "bg-rose-500/10",
-    text: "text-rose-600 dark:text-rose-400",
+    text: "text-rose-500 dark:text-rose-400",
   },
   {
     title: "Merge PDFs",
@@ -112,8 +112,8 @@ export default function Home() {
       {/* ━━━ HERO ━━━ */}
       <section className="relative isolate overflow-hidden">
         {/* gradient orbs */}
-        <div className="pointer-events-none absolute -top-40 left-1/4 h-[520px] w-[520px] rounded-full bg-primary/20 blur-[120px]" />
-        <div className="pointer-events-none absolute -top-20 right-1/4 h-[400px] w-[400px] rounded-full bg-amber-400/15 blur-[100px]" />
+        <div className="pointer-events-none absolute -top-40 left-1/4 h-[520px] w-[520px] rounded-full bg-indigo-500/20 blur-[120px]" />
+        <div className="pointer-events-none absolute -top-20 right-1/4 h-[400px] w-[400px] rounded-full bg-violet-400/15 blur-[100px]" />
 
         <div className="container mx-auto px-4 pt-28 pb-24 md:pt-40 md:pb-36 relative">
           <div className="max-w-3xl mx-auto text-center">
@@ -125,7 +125,7 @@ export default function Home() {
             <h1 className="text-5xl sm:text-6xl md:text-7xl font-black tracking-tight leading-[1.05]">
               Crush your files
               <br />
-              <span className="bg-gradient-to-r from-primary via-orange-400 to-amber-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-primary via-violet-400 to-cyan-400 bg-clip-text text-transparent">
                 not your privacy
               </span>
             </h1>
@@ -347,7 +347,7 @@ export default function Home() {
             {/* Pro — Coming Soon */}
             <div className="relative rounded-3xl border bg-card p-8 flex flex-col opacity-80">
               <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                <span className="inline-block rounded-full bg-amber-500/90 px-4 py-1 text-xs font-bold text-white uppercase tracking-wider">
+                <span className="inline-block rounded-full bg-violet-500/90 px-4 py-1 text-xs font-bold text-white uppercase tracking-wider">
                   Coming Soon
                 </span>
               </div>
@@ -387,7 +387,7 @@ export default function Home() {
             {/* Business — Coming Soon */}
             <div className="relative rounded-3xl border bg-card p-8 flex flex-col opacity-80">
               <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                <span className="inline-block rounded-full bg-amber-500/90 px-4 py-1 text-xs font-bold text-white uppercase tracking-wider">
+                <span className="inline-block rounded-full bg-violet-500/90 px-4 py-1 text-xs font-bold text-white uppercase tracking-wider">
                   Coming Soon
                 </span>
               </div>
