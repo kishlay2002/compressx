@@ -2,277 +2,258 @@
 
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import {
-  Zap,
-  Shield,
-  Gauge,
   ImageDown,
   FileDown,
   FilePlus2,
   Scissors,
   ArrowRightLeft,
   Check,
-  Lock,
-  Globe,
-  Cpu,
   ArrowRight,
-  Sparkles,
+  EyeOff,
+  Layers,
+  Mail,
+  HardDriveDownload,
+  ShieldCheck,
+  Workflow,
+  MonitorSmartphone,
+  Flame,
 } from "lucide-react";
 
 const tools = [
   {
-    title: "Compress Image",
-    description: "JPEG, PNG, WebP — reduce size up to 80%",
+    title: "Crush Images",
+    desc: "JPEG, PNG, WebP — up to 80% smaller",
     icon: ImageDown,
     href: "/compress-image",
-    gradient: "from-blue-500/20 to-cyan-500/20",
-    iconColor: "text-blue-600",
+    accent: "from-orange-500 to-amber-400",
+    bg: "bg-orange-500/10",
+    text: "text-orange-600 dark:text-orange-400",
   },
   {
-    title: "Compress PDF",
-    description: "Shrink PDFs while keeping content crisp",
+    title: "Crush PDFs",
+    desc: "Shrink documents, keep them crisp",
     icon: FileDown,
     href: "/compress-pdf",
-    gradient: "from-red-500/20 to-orange-500/20",
-    iconColor: "text-red-600",
+    accent: "from-rose-500 to-pink-400",
+    bg: "bg-rose-500/10",
+    text: "text-rose-600 dark:text-rose-400",
   },
   {
-    title: "Merge PDF",
-    description: "Combine multiple PDFs into one",
+    title: "Merge PDFs",
+    desc: "Combine files with page-level reorder",
     icon: FilePlus2,
     href: "/merge-pdf",
-    gradient: "from-emerald-500/20 to-green-500/20",
-    iconColor: "text-emerald-600",
+    accent: "from-teal-500 to-emerald-400",
+    bg: "bg-teal-500/10",
+    text: "text-teal-600 dark:text-teal-400",
   },
   {
     title: "Split PDF",
-    description: "Extract pages from a PDF",
+    desc: "Extract pages or ranges instantly",
     icon: Scissors,
     href: "/split-pdf",
-    gradient: "from-violet-500/20 to-purple-500/20",
-    iconColor: "text-violet-600",
+    accent: "from-violet-500 to-purple-400",
+    bg: "bg-violet-500/10",
+    text: "text-violet-600 dark:text-violet-400",
   },
   {
-    title: "Convert Format",
-    description: "JPEG, PNG, WebP and more",
+    title: "Convert",
+    desc: "Switch between JPEG, PNG & WebP",
     icon: ArrowRightLeft,
     href: "/convert",
-    gradient: "from-amber-500/20 to-orange-500/20",
-    iconColor: "text-amber-600",
+    accent: "from-sky-500 to-cyan-400",
+    bg: "bg-sky-500/10",
+    text: "text-sky-600 dark:text-sky-400",
   },
 ];
 
-const features = [
+const promises = [
   {
-    icon: Lock,
-    title: "Privacy First",
-    description:
-      "Files are processed locally in your browser. They never leave your device.",
+    icon: EyeOff,
+    title: "100 % on-device",
+    description: "Files never leave your browser. We can't see them even if we tried.",
   },
   {
-    icon: Gauge,
-    title: "Lightning Fast",
-    description:
-      "Near-native speed compression using advanced browser technology.",
+    icon: HardDriveDownload,
+    title: "Nothing to install",
+    description: "Works on every modern browser — Chrome, Safari, Firefox, Edge, mobile included.",
   },
   {
-    icon: Shield,
-    title: "Quality Preserved",
-    description:
-      "Smart algorithms analyze content to find the optimal compression point.",
+    icon: Layers,
+    title: "Page-level control",
+    description: "Drag-and-drop thumbnails to reorder or remove individual pages before processing.",
   },
   {
-    icon: Globe,
-    title: "Works Everywhere",
-    description: "No installation needed. Works on any modern browser, any device.",
+    icon: Workflow,
+    title: "Batch mode",
+    description: "Drop dozens of files at once and download them all in a single ZIP.",
   },
   {
-    icon: Cpu,
-    title: "Batch Processing",
-    description:
-      "Compress dozens of files at once. Download as a single ZIP file.",
+    icon: ShieldCheck,
+    title: "No account wall",
+    description: "Every tool works for free, right now, with zero sign-up friction.",
   },
   {
-    icon: Zap,
-    title: "100% Free Tier",
-    description:
-      "Compress up to 5 files per day for free. No sign-up required.",
+    icon: MonitorSmartphone,
+    title: "Automatic dark mode",
+    description: "Adapts to your system theme or toggle it manually from the navbar.",
   },
-];
-
-const pricingPlans = [
-  {
-    name: "Free",
-    price: "$0",
-    period: "forever",
-    description: "Perfect for occasional use",
-    features: [
-      "5 files per day",
-      "25MB max per file",
-      "Client-side processing",
-      "All compression tools",
-      "3 quality presets",
-    ],
-    cta: "Get Started",
-    href: "/compress-image",
-    popular: false,
-  },
-  {
-    name: "Pro",
-    price: "$8",
-    period: "/month",
-    description: "For power users and professionals",
-    features: [
-      "Unlimited files",
-      "500MB max per file",
-      "Server-side processing",
-      "Batch processing",
-      "Format conversion",
-      "Priority support",
-    ],
-    cta: "Coming Soon",
-    href: "#",
-    popular: true,
-    disabled: true,
-  },
-  {
-    name: "Business",
-    price: "$24",
-    period: "/month",
-    description: "For teams and organizations",
-    features: [
-      "Everything in Pro",
-      "2GB max per file",
-      "API access (10k calls/mo)",
-      "Team accounts (10 seats)",
-      "White-label option",
-      "Dedicated support",
-    ],
-    cta: "Coming Soon",
-    href: "#",
-    popular: false,
-    disabled: true,
-  },
-];
-
-const stats = [
-  { value: "100%", label: "Client-side processing" },
-  { value: "~70%", label: "Avg. size reduction" },
-  { value: "Zero", label: "Files uploaded to servers" },
-  { value: "Free", label: "No sign-up required" },
 ];
 
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
 
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(120,80,255,0.15),transparent)]" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-gradient-to-b from-primary/10 via-primary/5 to-transparent rounded-full blur-3xl opacity-60" />
-        <div className="container mx-auto px-4 pt-20 pb-16 md:pt-32 md:pb-24 relative">
-          <div className="max-w-4xl mx-auto text-center">
-            <Badge variant="secondary" className="mb-6 px-4 py-1.5 text-sm font-medium border border-primary/20 bg-primary/5">
-              <Sparkles className="h-3.5 w-3.5 mr-1.5 text-primary" />
-              Files never leave your device
-            </Badge>
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-[1.1]">
-              Compress files{" "}
-              <span className="bg-gradient-to-r from-primary via-violet-500 to-indigo-400 bg-clip-text text-transparent">
-                without compromise
+      {/* ━━━ HERO ━━━ */}
+      <section className="relative isolate overflow-hidden">
+        {/* gradient orbs */}
+        <div className="pointer-events-none absolute -top-40 left-1/4 h-[520px] w-[520px] rounded-full bg-primary/20 blur-[120px]" />
+        <div className="pointer-events-none absolute -top-20 right-1/4 h-[400px] w-[400px] rounded-full bg-amber-400/15 blur-[100px]" />
+
+        <div className="container mx-auto px-4 pt-28 pb-24 md:pt-40 md:pb-36 relative">
+          <div className="max-w-3xl mx-auto text-center">
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary mb-8">
+              <Flame className="h-3.5 w-3.5" />
+              Free &amp; 100 % private — nothing leaves your browser
+            </div>
+
+            <h1 className="text-5xl sm:text-6xl md:text-7xl font-black tracking-tight leading-[1.05]">
+              Crush your files
+              <br />
+              <span className="bg-gradient-to-r from-primary via-orange-400 to-amber-400 bg-clip-text text-transparent">
+                not your privacy
               </span>
             </h1>
-            <p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              The fastest, most private way to reduce file sizes. Advanced
-              compression running directly in your browser — no upload required.
+
+            <p className="mt-6 text-lg md:text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto">
+              Compress images &amp; PDFs, merge documents, split pages, convert formats
+              — all processed <strong>on your device</strong>. No servers. No uploads. Ever.
             </p>
+
             <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/compress-image" className={cn(buttonVariants({ size: "lg" }), "text-base px-8 h-12 shadow-lg shadow-primary/25")}>
-                <ImageDown className="h-5 w-5 mr-2" />
-                Compress Image
+              <Link
+                href="/compress-pdf"
+                className={cn(
+                  buttonVariants({ size: "lg" }),
+                  "h-13 px-8 text-base font-semibold shadow-lg shadow-primary/30 rounded-xl"
+                )}
+              >
+                Crush a PDF
                 <ArrowRight className="h-4 w-4 ml-2" />
               </Link>
-              <Link href="/compress-pdf" className={cn(buttonVariants({ size: "lg", variant: "outline" }), "text-base px-8 h-12 border-2")}>
-                <FileDown className="h-5 w-5 mr-2" />
-                Compress PDF
+              <Link
+                href="/compress-image"
+                className={cn(
+                  buttonVariants({ size: "lg", variant: "outline" }),
+                  "h-13 px-8 text-base font-semibold border-2 rounded-xl"
+                )}
+              >
+                Crush an Image
               </Link>
             </div>
-            <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-2xl mx-auto">
-              {stats.map((stat) => (
-                <div key={stat.label} className="text-center">
-                  <p className="text-2xl md:text-3xl font-bold text-primary">{stat.value}</p>
-                  <p className="text-xs text-muted-foreground mt-1">{stat.label}</p>
-                </div>
+
+            {/* trust strip */}
+            <div className="mt-16 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm text-muted-foreground">
+              {["Client-side only", "No sign-up", "Dark mode", "Works offline"].map((t) => (
+                <span key={t} className="flex items-center gap-1.5">
+                  <Check className="h-3.5 w-3.5 text-primary" />
+                  {t}
+                </span>
               ))}
             </div>
           </div>
         </div>
       </section>
 
-      {/* Tools Grid */}
-      <section className="py-20 relative" id="tools">
-        <div className="absolute inset-0 bg-gradient-to-b from-muted/50 to-background" />
-        <div className="container mx-auto px-4 relative">
-          <div className="text-center mb-14">
-            <Badge variant="outline" className="mb-4">All-in-one toolkit</Badge>
-            <h2 className="text-3xl md:text-4xl font-bold">All the tools you need</h2>
-            <p className="text-muted-foreground mt-3 text-lg">
-              Compress, merge, split, and convert — all in one place
+      {/* ━━━ TOOLS GRID ━━━ */}
+      <section className="py-24" id="tools">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
+              Everything you need in one place
+            </h2>
+            <p className="text-muted-foreground mt-3 text-lg max-w-md mx-auto">
+              Five tools. Zero tab-hopping. All free.
             </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-4xl mx-auto">
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-5xl mx-auto">
             {tools.map((tool) => (
-              <Link key={tool.href} href={tool.href}>
-                <Card className="h-full hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 cursor-pointer group overflow-hidden">
-                  <CardContent className="p-6 relative">
-                    <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${tool.gradient} rounded-full -translate-y-12 translate-x-12 opacity-50 group-hover:opacity-80 transition-opacity`} />
-                    <div className="relative">
-                      <div className={`inline-flex rounded-xl p-3 bg-gradient-to-br ${tool.gradient} mb-4`}>
-                        <tool.icon className={`h-6 w-6 ${tool.iconColor}`} />
-                      </div>
-                      <h3 className="font-semibold text-lg group-hover:text-primary transition-colors">
-                        {tool.title}
-                      </h3>
-                      <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
-                        {tool.description}
-                      </p>
-                      <div className="mt-3 flex items-center text-sm text-primary font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                        Try now <ArrowRight className="h-3.5 w-3.5 ml-1" />
-                      </div>
+              <Link key={tool.href} href={tool.href} className="group">
+                <div className="relative rounded-2xl border bg-card p-6 h-full transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-primary/30 overflow-hidden">
+                  {/* subtle gradient corner */}
+                  <div className={`absolute -top-8 -right-8 h-24 w-24 rounded-full bg-gradient-to-br ${tool.accent} opacity-20 group-hover:opacity-40 transition-opacity blur-xl`} />
+                  <div className="relative">
+                    <div className={cn("rounded-xl p-3 w-fit mb-4", tool.bg)}>
+                      <tool.icon className={cn("h-6 w-6", tool.text)} />
                     </div>
-                  </CardContent>
-                </Card>
+                    <h3 className="font-bold text-lg group-hover:text-primary transition-colors">
+                      {tool.title}
+                    </h3>
+                    <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
+                      {tool.desc}
+                    </p>
+                    <span className="mt-4 inline-flex items-center text-sm font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                      Open tool <ArrowRight className="h-3.5 w-3.5 ml-1" />
+                    </span>
+                  </div>
+                </div>
               </Link>
             ))}
+
+            {/* bonus card — CTA */}
+            <div className="relative rounded-2xl border-2 border-dashed border-primary/20 p-6 flex flex-col items-center justify-center text-center bg-primary/[0.03]">
+              <p className="text-sm font-medium text-primary">More tools coming</p>
+              <p className="text-xs text-muted-foreground mt-1 max-w-[180px]">
+                PDF → Word, watermark, OCR and more on the roadmap.
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Features */}
-      <section className="py-24" id="features">
+      {/* ━━━ HOW IT WORKS ━━━ */}
+      <section className="py-24 bg-muted/30 border-y" id="how">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <Badge variant="outline" className="mb-4">Why choose us</Badge>
-            <h2 className="text-3xl md:text-4xl font-bold">Why CompressX?</h2>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
+              Three steps. That&apos;s it.
+            </h2>
             <p className="text-muted-foreground mt-3 text-lg">
-              Built different from other compression tools
+              No installs, no account, no waiting.
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {features.map((feature) => (
-              <div key={feature.title} className="group rounded-2xl border bg-card/50 p-6 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 hover:border-primary/20">
-                <div className="rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 p-3 w-fit mb-4 group-hover:from-primary/20 group-hover:to-primary/10 transition-colors">
-                  <feature.icon className="h-6 w-6 text-primary" />
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            {[
+              {
+                num: "1",
+                title: "Drop your files",
+                desc: "Drag PDFs or images into the browser. Supports batch uploads.",
+              },
+              {
+                num: "2",
+                title: "Tweak settings",
+                desc: "Pick quality, reorder pages, set a target size — or use the defaults.",
+              },
+              {
+                num: "3",
+                title: "Download results",
+                desc: "Grab optimized files instantly. Multiple files? One-click ZIP.",
+              },
+            ].map((step) => (
+              <div key={step.num} className="text-center">
+                <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground text-xl font-black shadow-lg shadow-primary/25">
+                  {step.num}
                 </div>
-                <h3 className="font-semibold text-lg">{feature.title}</h3>
-                <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-                  {feature.description}
+                <h3 className="font-bold text-lg">{step.title}</h3>
+                <p className="text-sm text-muted-foreground mt-2 leading-relaxed max-w-xs mx-auto">
+                  {step.desc}
                 </p>
               </div>
             ))}
@@ -280,104 +261,192 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Pricing */}
-      <section className="py-24 relative" id="pricing">
-        <div className="absolute inset-0 bg-gradient-to-b from-muted/50 to-background" />
-        <div className="container mx-auto px-4 relative">
+      {/* ━━━ WHY CRUSHFILE ━━━ */}
+      <section className="py-24" id="features">
+        <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <Badge variant="outline" className="mb-4">Pricing</Badge>
-            <h2 className="text-3xl md:text-4xl font-bold">Simple, transparent pricing</h2>
-            <p className="text-muted-foreground mt-3 text-lg">
-              Start for free. Upgrade when you need more.
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
+              Why CrushFile?
+            </h2>
+            <p className="text-muted-foreground mt-3 text-lg max-w-md mx-auto">
+              Other tools upload your files. We don&apos;t. Here&apos;s what else makes us different.
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto items-start">
-            {pricingPlans.map((plan) => (
-              <Card
-                key={plan.name}
-                className={cn(
-                  "relative overflow-hidden transition-all duration-300 hover:shadow-xl",
-                  plan.popular
-                    ? "border-primary shadow-lg shadow-primary/10 md:scale-105"
-                    : "hover:border-primary/30"
-                )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {promises.map((item) => (
+              <div
+                key={item.title}
+                className="group rounded-2xl border bg-card p-6 transition-all duration-300 hover:shadow-lg hover:border-primary/20"
               >
-                {plan.popular && (
-                  <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary via-violet-500 to-indigo-400" />
-                )}
-                <CardContent className="p-8">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-xl font-semibold">{plan.name}</h3>
-                    {plan.popular && (
-                      <Badge className="bg-primary/10 text-primary border-primary/20">
-                        Popular
-                      </Badge>
-                    )}
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {plan.description}
-                  </p>
-                  <div className="mt-6 mb-8">
-                    <span className="text-5xl font-bold">{plan.price}</span>
-                    <span className="text-muted-foreground ml-1">{plan.period}</span>
-                  </div>
-                  {plan.disabled ? (
-                    <div
-                      className={cn(
-                        buttonVariants({ variant: "outline" }),
-                        "w-full h-11 text-base opacity-60 cursor-not-allowed pointer-events-none"
-                      )}
-                    >
-                      {plan.cta}
-                    </div>
-                  ) : (
-                    <Link
-                      href={plan.href}
-                      className={cn(
-                        buttonVariants({ variant: plan.popular ? "default" : "outline" }),
-                        "w-full h-11 text-base",
-                        plan.popular && "shadow-lg shadow-primary/25"
-                      )}
-                    >
-                      {plan.cta}
-                    </Link>
-                  )}
-                  <ul className="mt-8 space-y-3.5">
-                    {plan.features.map((feature) => (
-                      <li
-                        key={feature}
-                        className="flex items-center gap-3 text-sm"
-                      >
-                        <div className="rounded-full bg-green-500/10 p-0.5">
-                          <Check className="h-3.5 w-3.5 text-green-600" />
-                        </div>
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
+                <div className="rounded-xl bg-primary/10 p-2.5 w-fit mb-4 group-hover:bg-primary/15 transition-colors">
+                  <item.icon className="h-5 w-5 text-primary" />
+                </div>
+                <h3 className="font-bold">{item.title}</h3>
+                <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
+                  {item.description}
+                </p>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-24 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_120%,rgba(120,80,255,0.12),transparent)]" />
-        <div className="container mx-auto px-4 text-center relative">
-          <div className="max-w-2xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold">Ready to compress?</h2>
-            <p className="text-muted-foreground mt-4 text-lg leading-relaxed">
-              No sign-up required. Just drop your files and get smaller files
-              instantly. It&apos;s that simple.
+      {/* ━━━ PRICING ━━━ */}
+      <section className="py-24 bg-muted/30 border-y" id="pricing">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
+              Simple, transparent pricing
+            </h2>
+            <p className="text-muted-foreground mt-3 text-lg leading-relaxed">
+              Start free. Upgrade when you need more power.
             </p>
-            <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/compress-image" className={cn(buttonVariants({ size: "lg" }), "h-12 px-8 text-base shadow-lg shadow-primary/25")}>
-                Start Compressing Free
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {/* Free */}
+            <div className="rounded-3xl border-2 border-primary/20 bg-card p-8 shadow-xl shadow-primary/5 flex flex-col">
+              <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary uppercase tracking-wider w-fit mb-4">
+                Current plan
+              </span>
+              <h3 className="text-2xl font-bold">Free</h3>
+              <div className="mt-2 mb-6">
+                <span className="text-4xl font-black">$0</span>
+                <span className="text-muted-foreground ml-1">/mo</span>
+              </div>
+              <ul className="space-y-3 flex-1">
+                {[
+                  "All 5 tools unlocked",
+                  "Up to 25 MB per file",
+                  "5 operations / day",
+                  "Client-side processing",
+                  "Page reorder & removal",
+                  "Dark & light themes",
+                ].map((item) => (
+                  <li key={item} className="flex items-center gap-2.5 text-sm">
+                    <div className="rounded-full bg-emerald-500/10 p-0.5">
+                      <Check className="h-3.5 w-3.5 text-emerald-600" />
+                    </div>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href="/compress-image"
+                className={cn(
+                  buttonVariants({ size: "lg" }),
+                  "w-full h-12 text-base font-semibold mt-8 rounded-xl shadow-lg shadow-primary/25"
+                )}
+              >
+                Start crushing files
                 <ArrowRight className="h-4 w-4 ml-2" />
               </Link>
             </div>
+
+            {/* Pro — Coming Soon */}
+            <div className="relative rounded-3xl border bg-card p-8 flex flex-col opacity-80">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                <span className="inline-block rounded-full bg-amber-500/90 px-4 py-1 text-xs font-bold text-white uppercase tracking-wider">
+                  Coming Soon
+                </span>
+              </div>
+              <h3 className="text-2xl font-bold mt-2">Pro</h3>
+              <div className="mt-2 mb-6">
+                <span className="text-4xl font-black">$8</span>
+                <span className="text-muted-foreground ml-1">/mo</span>
+              </div>
+              <p className="text-sm text-muted-foreground mb-6">For power users and professionals</p>
+              <ul className="space-y-3 flex-1">
+                {[
+                  "Unlimited files",
+                  "500 MB max per file",
+                  "Server-side processing",
+                  "Batch processing",
+                  "Format conversion",
+                  "Priority support",
+                ].map((item) => (
+                  <li key={item} className="flex items-center gap-2.5 text-sm">
+                    <div className="rounded-full bg-emerald-500/10 p-0.5">
+                      <Check className="h-3.5 w-3.5 text-emerald-600" />
+                    </div>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <div
+                className={cn(
+                  buttonVariants({ variant: "outline", size: "lg" }),
+                  "w-full h-12 text-base mt-8 rounded-xl opacity-60 cursor-not-allowed pointer-events-none"
+                )}
+              >
+                Coming Soon
+              </div>
+            </div>
+
+            {/* Business — Coming Soon */}
+            <div className="relative rounded-3xl border bg-card p-8 flex flex-col opacity-80">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                <span className="inline-block rounded-full bg-amber-500/90 px-4 py-1 text-xs font-bold text-white uppercase tracking-wider">
+                  Coming Soon
+                </span>
+              </div>
+              <h3 className="text-2xl font-bold mt-2">Business</h3>
+              <div className="mt-2 mb-6">
+                <span className="text-4xl font-black">$24</span>
+                <span className="text-muted-foreground ml-1">/mo</span>
+              </div>
+              <p className="text-sm text-muted-foreground mb-6">For teams and organizations</p>
+              <ul className="space-y-3 flex-1">
+                {[
+                  "Everything in Pro",
+                  "2 GB max per file",
+                  "API access (10k calls/mo)",
+                  "Team accounts (10 seats)",
+                  "White-label option",
+                  "Dedicated support",
+                ].map((item) => (
+                  <li key={item} className="flex items-center gap-2.5 text-sm">
+                    <div className="rounded-full bg-emerald-500/10 p-0.5">
+                      <Check className="h-3.5 w-3.5 text-emerald-600" />
+                    </div>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <div
+                className={cn(
+                  buttonVariants({ variant: "outline", size: "lg" }),
+                  "w-full h-12 text-base mt-8 rounded-xl opacity-60 cursor-not-allowed pointer-events-none"
+                )}
+              >
+                Coming Soon
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ━━━ CONTACT ━━━ */}
+      <section className="py-20">
+        <div className="container mx-auto px-4 text-center">
+          <div className="rounded-3xl border bg-card p-10 md:p-14 max-w-2xl mx-auto">
+            <Mail className="h-10 w-10 text-primary mx-auto mb-5" />
+            <h2 className="text-2xl md:text-3xl font-bold">
+              Got feedback?
+            </h2>
+            <p className="text-muted-foreground mt-2 max-w-sm mx-auto">
+              Bug reports, feature requests, or just a friendly hello — we read every message.
+            </p>
+            <a
+              href="mailto:kishlaykashish99@gmail.com"
+              className={cn(
+                buttonVariants({ variant: "outline", size: "lg" }),
+                "mt-6 h-12 px-8 text-base rounded-xl font-medium"
+              )}
+            >
+              kishlaykashish99@gmail.com
+            </a>
           </div>
         </div>
       </section>

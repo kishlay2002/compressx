@@ -18,7 +18,7 @@ export default function PrivacyPage() {
         <section>
           <h2 className="text-xl font-semibold mb-3">Our Core Promise</h2>
           <p className="text-muted-foreground leading-relaxed">
-            CompressX is built with privacy as a foundation, not an afterthought. Your files are processed
+            CrushFile is built with privacy as a foundation, not an afterthought. Your files are processed
             entirely in your browser using client-side technology. <strong>We never upload, store, or
             have access to any files you compress, merge, split, or convert.</strong>
           </p>
@@ -83,8 +83,8 @@ export default function PrivacyPage() {
           <h2 className="text-xl font-semibold mb-3">Contact</h2>
           <p className="text-muted-foreground leading-relaxed">
             Questions about privacy? Reach out at{" "}
-            <a href="mailto:privacy@compressx.app" className="text-primary hover:underline">
-              privacy@compressx.app
+            <a href="mailto:kishlaykashish99@gmail.com" className="text-primary hover:underline">
+              kishlaykashish99@gmail.com
             </a>
           </p>
         </section>

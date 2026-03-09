@@ -79,7 +79,7 @@ export default function LoginPage() {
     <Card className="w-full max-w-md shadow-xl shadow-primary/5 border-border/50">
       <CardHeader className="text-center pb-2">
         <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
-        <CardDescription className="text-base">Sign in to your CompressX account</CardDescription>
+        <CardDescription className="text-base">Sign in to your CrushFile account</CardDescription>
       </CardHeader>
       <CardContent className="pt-4">
         <Button

@@ -15,11 +15,11 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "CompressX — Compress PDFs & Images Online for Free",
-    template: "%s | CompressX",
+    default: "CrushFile — Crush PDFs & Images Instantly, Free & Private",
+    template: "%s | CrushFile",
   },
   description:
-    "Compress PDFs and images without losing quality. Privacy-first — files are processed locally in your browser. No upload required.",
+    "Crush file sizes in your browser. Compress, merge, split, and convert PDFs & images — 100% private, nothing ever uploaded.",
   keywords: [
     "compress pdf",
     "compress image",
@@ -32,22 +32,22 @@ export const metadata: Metadata = {
     "free compression tool",
     "browser-based compression",
   ],
-  authors: [{ name: "CompressX" }],
-  creator: "CompressX",
+  authors: [{ name: "CrushFile" }],
+  creator: "CrushFile",
   metadataBase: new URL(process.env.NEXTAUTH_URL || "http://localhost:3000"),
   openGraph: {
     type: "website",
     locale: "en_US",
-    siteName: "CompressX",
-    title: "CompressX — Compress PDFs & Images Online for Free",
+    siteName: "CrushFile",
+    title: "CrushFile — Crush PDFs & Images Instantly, Free & Private",
     description:
-      "Compress PDFs and images without losing quality. Privacy-first — files processed locally in your browser.",
+      "Crush file sizes in your browser. 100% private — nothing ever uploaded.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "CompressX — Compress PDFs & Images Online for Free",
+    title: "CrushFile — Crush PDFs & Images Instantly, Free & Private",
     description:
-      "Compress PDFs and images without losing quality. Privacy-first — files processed locally in your browser.",
+      "Crush file sizes in your browser. 100% private — nothing ever uploaded.",
   },
   robots: {
     index: true,

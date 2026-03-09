@@ -18,7 +18,7 @@ export default function TermsPage() {
         <section>
           <h2 className="text-xl font-semibold mb-3">1. Service Description</h2>
           <p className="text-muted-foreground leading-relaxed">
-            CompressX provides browser-based file compression, merging, splitting, and conversion tools.
+            CrushFile provides browser-based file compression, merging, splitting, and conversion tools.
             All file processing happens locally in your browser — files are never uploaded to our servers.
           </p>
         </section>
@@ -26,7 +26,7 @@ export default function TermsPage() {
         <section>
           <h2 className="text-xl font-semibold mb-3">2. Acceptable Use</h2>
           <p className="text-muted-foreground leading-relaxed">
-            You may use CompressX for lawful purposes only. You are responsible for the content
+            You may use CrushFile for lawful purposes only. You are responsible for the content
             of any files you process. Do not use the service to process illegal, harmful, or
             infringing content.
           </p>
@@ -52,7 +52,7 @@ export default function TermsPage() {
         <section>
           <h2 className="text-xl font-semibold mb-3">5. Disclaimer</h2>
           <p className="text-muted-foreground leading-relaxed">
-            CompressX is provided &quot;as is&quot; without warranty of any kind. While we strive to
+            CrushFile is provided &quot;as is&quot; without warranty of any kind. While we strive to
             maintain high quality compression, we cannot guarantee specific compression ratios or
             that output files will be suitable for all purposes. Always keep backups of your original files.
           </p>
@@ -61,7 +61,7 @@ export default function TermsPage() {
         <section>
           <h2 className="text-xl font-semibold mb-3">6. Limitation of Liability</h2>
           <p className="text-muted-foreground leading-relaxed">
-            Since all processing happens in your browser, CompressX is not responsible for any
+            Since all processing happens in your browser, CrushFile is not responsible for any
             data loss, file corruption, or other issues that may occur during processing.
             We recommend keeping original copies of your files.
           </p>
@@ -79,8 +79,8 @@ export default function TermsPage() {
           <h2 className="text-xl font-semibold mb-3">8. Contact</h2>
           <p className="text-muted-foreground leading-relaxed">
             Questions about these terms? Reach out at{" "}
-            <a href="mailto:legal@compressx.app" className="text-primary hover:underline">
-              legal@compressx.app
+            <a href="mailto:kishlaykashish99@gmail.com" className="text-primary hover:underline">
+              kishlaykashish99@gmail.com
             </a>
           </p>
         </section>

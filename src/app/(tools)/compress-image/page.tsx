@@ -136,7 +136,7 @@ export default function CompressImagePage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "compressx-images.zip";
+    a.download = "crushfile-images.zip";
     a.click();
     URL.revokeObjectURL(url);
     toast.success("ZIP downloaded with all compressed images");

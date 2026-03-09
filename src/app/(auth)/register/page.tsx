@@ -99,7 +99,7 @@ export default function RegisterPage() {
       <CardHeader className="text-center pb-2">
         <CardTitle className="text-2xl font-bold">Create an account</CardTitle>
         <CardDescription className="text-base">
-          Get started with CompressX for free
+          Get started with CrushFile for free
         </CardDescription>
       </CardHeader>
       <CardContent className="pt-4">

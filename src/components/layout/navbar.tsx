@@ -21,7 +21,7 @@ import {
   LogOut,
   LayoutDashboard,
   Menu,
-  Zap,
+  Flame,
   ChevronDown,
   Moon,
   Sun,
@@ -54,9 +54,9 @@ export function Navbar() {
         <div className="flex items-center gap-8">
           <Link href="/" className="flex items-center gap-2.5 font-bold text-xl group">
             <div className="rounded-lg bg-primary p-1.5 group-hover:shadow-lg group-hover:shadow-primary/25 transition-shadow">
-              <Zap className="h-4 w-4 text-primary-foreground" />
+              <Flame className="h-4 w-4 text-primary-foreground" />
             </div>
-            <span>CompressX</span>
+            <span>CrushFile</span>
           </Link>
 
           <nav className="hidden md:flex items-center gap-1">
@@ -107,7 +107,7 @@ export function Navbar() {
             <DropdownMenu>
               <DropdownMenuTrigger>
                 <div className="flex items-center gap-2.5 rounded-full border border-border/50 bg-muted/50 pl-1 pr-3 py-1 hover:bg-muted transition-colors cursor-pointer">
-                  <div className="h-7 w-7 rounded-full bg-gradient-to-br from-primary to-violet-500 flex items-center justify-center text-[11px] font-bold text-white">
+                  <div className="h-7 w-7 rounded-full bg-gradient-to-br from-primary to-amber-500 flex items-center justify-center text-[11px] font-bold text-white">
                     {initials}
                   </div>
                   <span className="text-sm font-medium max-w-[120px] truncate">
@@ -193,7 +193,7 @@ export function Navbar() {
                 {session?.user ? (
                   <>
                     <div className="flex items-center gap-3 px-3 py-2 mb-2">
-                      <div className="h-9 w-9 rounded-full bg-gradient-to-br from-primary to-violet-500 flex items-center justify-center text-xs font-bold text-white">
+                      <div className="h-9 w-9 rounded-full bg-gradient-to-br from-primary to-amber-500 flex items-center justify-center text-xs font-bold text-white">
                         {initials}
                       </div>
                       <div className="min-w-0">
